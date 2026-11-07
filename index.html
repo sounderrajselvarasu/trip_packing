@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#11263C">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Trip Packing Tracker</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#EDF1F5;--card:#fff;--ink:#11263C;--mute:#5B6B7B;--line:#D5DDE5;--acc:#F5B700;--on-acc:#11263C;--ok:#1F8A5B;--bad:#B3261E;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1A27;--card:#162536;--ink:#EAF0F6;--mute:#9AABBB;--line:#2A3C50;--ok:#4CC38A;--bad:#FF8A80}}
+:root[data-theme="dark"]{--bg:#0E1A27;--card:#162536;--ink:#EAF0F6;--mute:#9AABBB;--line:#2A3C50;--ok:#4CC38A;--bad:#FF8A80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px 16px 120px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.trip{font-size:26px;font-weight:800;margin:0;letter-spacing:-.01em}
+.ghost{background:none;border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-height:44px}
+.ticket{margin:16px 0;background:var(--ink);color:var(--bg);border-radius:18px;padding:18px 18px 20px;position:relative}
+.ticket .big{font-size:34px;font-weight:800;line-height:1.1}
+.ticket .sub{opacity:.8;margin-top:2px}
+.road{position:relative;height:10px;border-radius:6px;background:rgba(255,255,255,.2);margin:34px 6px 4px}
+.road i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--acc);transition:width .4s}
+.road b{position:absolute;top:-28px;font-size:26px;transform:translateX(-50%);transition:left .4s;font-weight:400}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px}
+.tabs button{border:0;background:none;border-radius:10px;padding:10px 2px;min-height:44px;font-weight:600}
+.tabs button[aria-selected="true"]{background:var(--acc);color:var(--on-acc)}
+.hint{color:var(--mute);margin:10px 2px 0;font-size:14px}
+.tools{display:flex;gap:8px;margin:12px 0}
+.tools input[type=search]{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px;min-height:44px}
+.tog{display:flex;align-items:center;gap:6px;font-size:14px;white-space:nowrap}
+h2{font-size:18px;margin:22px 2px 8px;display:flex;justify-content:space-between;align-items:baseline}
+h2 span{font-size:14px;color:var(--mute);font-weight:400}
+ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+li{display:flex;align-items:center;gap:10px;padding:4px 10px 4px 6px;border-top:1px solid var(--line);min-height:52px}
+li:first-child{border-top:0}
+.chk{width:44px;height:44px;flex:none;border:0;background:none;display:grid;place-items:center}
+.chk span{width:26px;height:26px;border-radius:8px;border:2px solid var(--mute);display:grid;place-items:center;color:transparent;font-weight:800;font-size:15px}
+.done .chk span{background:var(--ok);border-color:var(--ok);color:#fff}
+.nm{flex:1;text-align:left;background:none;border:0;padding:10px 0;min-height:44px}
+.done .nm{color:var(--mute);text-decoration:line-through}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:20px;padding:1px 8px;color:var(--mute);white-space:nowrap}
+.qty{font-weight:600;color:var(--mute)}
+.empty{padding:28px 16px;text-align:center;color:var(--mute);background:var(--card);border:1px dashed var(--line);border-radius:14px;margin-top:16px}
+.addbar{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--line)}
+.addbar div{max-width:640px;margin:0 auto;display:flex;gap:8px}
+.addbar input,.addbar select{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px;min-height:44px;min-width:0}
+.addbar input{flex:1}.addbar select{width:112px}
+.btn{background:var(--acc);color:var(--on-acc);border:0;border-radius:10px;padding:10px 16px;font-weight:800;min-height:44px}
+.btn.alt{background:none;color:var(--ink);border:1px solid var(--line);font-weight:600}
+.btn.del{background:none;color:var(--bad);border:1px solid var(--bad);font-weight:600}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--card);color:var(--ink);width:min(92vw,440px);padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog label{display:block;margin:10px 0 4px;font-size:14px;color:var(--mute)}
+dialog input[type=text],dialog input[type=number],dialog select,dialog textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;min-height:44px}
+dialog textarea{min-height:120px;font:13px/1.3 ui-monospace,monospace}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+@media print{.addbar,.tabs,.tools,.top button{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><h1 class="trip" id="tripName"></h1><button class="ghost" id="menuBtn" aria-label="Trips and backup">Trips</button></div>
+  <section class="ticket" aria-live="polite">
+    <div class="big" id="big"></div><div class="sub" id="sub"></div>
+    <div class="road" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="bar"><i id="fill"></i><b id="bus">🚌</b></div>
+  </section>
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-m="plan">Plan</button><button role="tab" data-m="pack">Pack</button><button role="tab" data-m="back">Return</button><button role="tab" data-m="buy">Buy</button>
+  </div>
+  <p class="hint" id="hint"></p>
+  <div class="tools"><input type="search" id="q" placeholder="Search items" aria-label="Search items"><label class="tog"><input type="checkbox" id="hide"> Hide done</label></div>
+  <div id="list"></div>
+</main>
+
+<div class="addbar"><div>
+  <input id="newName" placeholder="Add an item" aria-label="New item name">
+  <select id="newCat" aria-label="Category"></select>
+  <button class="btn" id="addBtn">Add</button>
+</div></div>
+
+<dialog id="itemDlg">
+  <h3 style="margin:0 0 6px">Edit item</h3>
+  <label for="eName">Name</label><input type="text" id="eName">
+  <label for="eQty">Quantity</label><input type="number" id="eQty" min="1">
+  <label for="eCat">Category</label><input type="text" id="eCat" list="cats"><datalist id="cats"></datalist>
+  <label for="eBuy">Shopping</label>
+  <select id="eBuy"><option value="0">Not on the shopping list</option><option value="1">Need to buy</option><option value="2">Bought</option></select>
+  <label class="tog" style="margin-top:12px"><input type="checkbox" id="eThere"> Already at the destination</label>
+  <div class="row"><button class="btn" id="eSave">Save changes</button><button class="btn alt" id="eCancel">Cancel</button><button class="btn del" id="eDel">Delete item</button></div>
+</dialog>
+
+<dialog id="menuDlg">
+  <h3 style="margin:0 0 6px">Trips and backup</h3>
+  <label for="tName">Trip name</label><input type="text" id="tName">
+  <div class="row"><button class="btn" id="tRename">Rename trip</button><button class="btn alt" id="tNew">Start new trip from this list</button></div>
+  <label for="tSel">Switch trip</label><select id="tSel"></select>
+  <div class="row"><button class="btn alt" id="tReset">Clear all ticks</button><button class="btn del" id="tDel">Delete this trip</button></div>
+  <label for="bk">Backup (copy this text to keep it safe, paste a backup here to restore)</label>
+  <textarea id="bk" spellcheck="false"></textarea>
+  <div class="row"><button class="btn alt" id="bkLoad">Restore from backup</button><button class="btn alt" id="mClose">Close</button></div>
+  <p class="hint" id="bkMsg"></p>
+</dialog>
+
+<script>
+var KEY='packlist:v1', mode='plan', editId=null, S;
+var uid=function(){return Math.random().toString(36).slice(2,9)};
+var $=function(i){return document.getElementById(i)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+function mk(n,c,q,need,packed,x){x=x||{};return{id:uid(),name:n,cat:c,qty:q||1,need:!!(need||packed),packed:!!packed,back:false,buy:x.buy||0,there:!!x.there}}
+function seed(){
+  var E='Electronics',T='Toiletries',C='Carry and wear',K='Keys and ID',D='Devotional',L='Clothes',P='Stationery',O='Other',it=[];
+  [['Phone',E,1,1,0],['Wired earphone',E],['Bluetooth earphone',E,1,1],['Phone charger',E,1,1],['Power bank',E],['Laptop (office)',E,1,1,1],['Laptop charger (office)',E,1,1,1],['HP laptop',E],['HP laptop charger',E],['iPad',E,1,1],['iPad charger',E,1,1,1],['Computer mouse',E,1,1,1],['Mouse pad',E,1,1,1],
+  ['Brush',T,1,1],['Paste',T,1,1],['Bath soap kit',T,1,1],['Towel',T,1,1],['Face wash',T,1,1],['Minoxidil',T,1,1],['Hair tablet',T],['Sunscreen',T,1,1],['Face serum',T,1,1],['Body wash',T],
+  ['Water bottle',C,1,1],['Umbrella',C],['Wallet',C,1,1,1],['Shoe',C],['Watch',C,1,1,1],['Belt',C,1,1,1],['Eye glass',C,1,1],['Red cloth',C,1,1,1],['Hand kerchief',C,1,1,1],['Eye mask',C,1,1],['Cube (3x3)',C],
+  ['Bike key',K],['Cabinet key',K],['House key',K,1,1],['Office ID card',K],
+  ['Murugan ash',D,1,1],['Murugan sandal',D,1,1],['Murugan saffron',D,1,1],
+  ['Shirt',L,2,1,1],['Pant',L,2,1,1],['Track pant',L,1,1,1],['Jogger (white)',L],['T-shirt',L,3,1,1],['Trouser',L,3,1,1],['Vest',L,4,1,1],['Inner',L,4,1,1],
+  ['A4 sheets',P],['Pen',P],['Pencil',P],['Scale',P]].forEach(function(r){it.push(mk(r[0],r[1],r[2],r[3],r[4]))});
+  it.push(mk('Dumbbell',O,1,0,0,{there:1}),mk('Nexa bag (Baleno details)',O,1,0,0,{there:1}),mk('Sweets',O,1,0,0,{buy:2}));
+  var id=uid();return{cur:id,trips:[{id:id,name:'My trip',items:it}]}
+}
+function load(){try{var r=localStorage.getItem(KEY);if(r){var d=JSON.parse(r);if(d&&d.trips&&d.trips.length)return d}}catch(e){}return seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function trip(){return S.trips.filter(function(t){return t.id===S.cur})[0]||S.trips[0]}
+function inMode(i){return mode==='plan'?true:mode==='pack'?i.need:mode==='back'?(i.need||i.there):i.buy>0}
+function isDone(i){return mode==='plan'?i.need:mode==='pack'?i.packed:mode==='back'?i.back:i.buy===2}
+var HINTS={plan:'Tick what you plan to take. Tap a name to edit it.',pack:'Tick each item as it goes into the bag.',back:'Everything you plan to take is listed here automatically. Tick each item as it comes back home.',buy:'Things to buy before you go. Tick them once bought.'};
+var NOUN={plan:['planned','items planned'],pack:['packed','packed'],back:['back home','back home'],buy:['bought','bought']};
+function render(){
+  var t=trip(),q=$('q').value.trim().toLowerCase(),hide=$('hide').checked;
+  $('tripName').textContent=t.name;document.title=t.name+' – Packing tracker';
+  Array.prototype.forEach.call($('tabs').children,function(b){b.setAttribute('aria-selected',b.dataset.m===mode)});
+  $('hint').textContent=HINTS[mode];
+  var all=t.items.filter(inMode),dn=all.filter(isDone).length,tot=mode==='plan'?t.items.length:all.length,pct=tot?Math.round(dn/tot*100):0;
+  $('big').textContent=dn+' of '+tot;$('sub').textContent=NOUN[mode][1]+(pct===100&&tot?' – all set':' ('+pct+'%)');
+  $('fill').style.width=pct+'%';$('bus').style.left=Math.max(3,Math.min(97,pct))+'%';$('bar').setAttribute('aria-valuenow',pct);
+  var cats=[];t.items.forEach(function(i){if(cats.indexOf(i.cat)<0)cats.push(i.cat)});
+  $('cats').innerHTML=cats.map(function(c){return'<option value="'+esc(c)+'">'}).join('');
+  var cur=$('newCat').value;$('newCat').innerHTML=cats.map(function(c){return'<option>'+esc(c)+'</option>'}).join('');if(cats.indexOf(cur)>=0)$('newCat').value=cur;
+  var html='';
+  cats.forEach(function(c){
+    var rows=t.items.filter(function(i){return i.cat===c&&inMode(i)&&(!q||i.name.toLowerCase().indexOf(q)>=0)&&(!hide||!isDone(i))});
+    if(!rows.length)return;
+    var d=rows.filter(isDone).length;
+    html+='<h2>'+esc(c)+'<span>'+d+'/'+rows.length+'</span></h2><ul>'+rows.map(function(i){
+      return'<li class="'+(isDone(i)?'done':'')+'"><button class="chk" data-a="t" data-id="'+i.id+'" role="checkbox" aria-checked="'+isDone(i)+'" aria-label="'+esc(i.name)+'"><span>✓</span></button>'
+      +'<button class="nm" data-a="e" data-id="'+i.id+'">'+esc(i.name)+'</button>'
+      +(i.there?'<span class="tag">at destination</span>':'')+(i.buy===1?'<span class="tag">to buy</span>':'')
+      +(i.qty>1?'<span class="qty">×'+i.qty+'</span>':'')+'</li>'}).join('')+'</ul>'});
+  $('list').innerHTML=html||'<div class="empty">'+(q?'No items match your search.':mode==='buy'?'Nothing to buy. Add an item below to start a shopping list.':mode==='plan'?'No items yet. Add your first item below.':'Nothing here yet. Tick items in Plan first.')+'</div>';
+}
+function find(id){return trip().items.filter(function(i){return i.id===id})[0]}
+$('list').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;var i=find(b.dataset.id);if(!i)return;
+  if(b.dataset.a==='t'){
+    if(mode==='plan'){i.need=!i.need;if(!i.need)i.packed=false}
+    else if(mode==='pack'){i.packed=!i.packed}
+    else if(mode==='back'){i.back=!i.back}
+    else{i.buy=i.buy===2?1:2}
+    save();render()
+  }else openEdit(i)
+});
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(b){mode=b.dataset.m;render()}});
+$('q').addEventListener('input',render);$('hide').addEventListener('change',render);
+function add(){
+  var n=$('newName').value.trim();if(!n)return;
+  var i=mk(n,$('newCat').value||'Other',1,mode==='pack'||mode==='plan'||mode==='back');
+  if(mode==='buy'){i.buy=1;i.need=false}
+  trip().items.push(i);$('newName').value='';save();render()
+}
+$('addBtn').addEventListener('click',add);
+$('newName').addEventListener('keydown',function(e){if(e.key==='Enter')add()});
+function openEdit(i){editId=i.id;$('eName').value=i.name;$('eQty').value=i.qty;$('eCat').value=i.cat;$('eBuy').value=i.buy;$('eThere').checked=i.there;$('itemDlg').showModal()}
+$('eSave').addEventListener('click',function(){
+  var i=find(editId);if(i){i.name=$('eName').value.trim()||i.name;i.qty=Math.max(1,parseInt($('eQty').value,10)||1);i.cat=$('eCat').value.trim()||'Other';i.buy=parseInt($('eBuy').value,10);i.there=$('eThere').checked}
+  $('itemDlg').close();save();render()});
+$('eCancel').addEventListener('click',function(){$('itemDlg').close()});
+$('eDel').addEventListener('click',function(){var t=trip();t.items=t.items.filter(function(i){return i.id!==editId});$('itemDlg').close();save();render()});
+
+function openMenu(){
+  $('tName').value=trip().name;
+  $('tSel').innerHTML=S.trips.map(function(t){return'<option value="'+t.id+'"'+(t.id===S.cur?' selected':'')+'>'+esc(t.name)+'</option>'}).join('');
+  $('bk').value=JSON.stringify(S);$('bkMsg').textContent='';$('menuDlg').showModal()}
+$('menuBtn').addEventListener('click',openMenu);
+$('mClose').addEventListener('click',function(){$('menuDlg').close()});
+$('tRename').addEventListener('click',function(){var n=$('tName').value.trim();if(n){trip().name=n;save();render();$('menuDlg').close()}});
+$('tNew').addEventListener('click',function(){
+  var n=$('tName').value.trim()||'New trip',id=uid();
+  var items=trip().items.map(function(i){var c=JSON.parse(JSON.stringify(i));c.id=uid();c.packed=false;c.back=false;if(c.buy===2)c.buy=0;return c});
+  S.trips.push({id:id,name:n,items:items});S.cur=id;save();render();$('menuDlg').close()});
+$('tSel').addEventListener('change',function(){S.cur=$('tSel').value;save();render();$('menuDlg').close()});
+$('tReset').addEventListener('click',function(){trip().items.forEach(function(i){i.packed=false;i.back=false;if(i.buy===2)i.buy=1});save();render();$('menuDlg').close()});
+$('tDel').addEventListener('click',function(){
+  if(S.trips.length<2){$('bkMsg').textContent='Keep at least one trip. Rename this one or clear its ticks instead.';return}
+  S.trips=S.trips.filter(function(t){return t.id!==S.cur});S.cur=S.trips[0].id;save();render();$('menuDlg').close()});
+$('bkLoad').addEventListener('click',function(){
+  try{var d=JSON.parse($('bk').value);if(!d||!d.trips||!d.trips.length||!d.trips[0].items)throw 0;S=d;if(!trip())S.cur=S.trips[0].id;save();render();$('menuDlg').close()}
+  catch(e){$('bkMsg').textContent='That backup text is not valid. Paste the full text you copied earlier.'}});
+
+S=load();render();
+if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(function(){})}catch(e){}}
+</script>
+</body>
+</html>
